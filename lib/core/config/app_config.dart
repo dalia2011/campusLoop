@@ -18,6 +18,15 @@ class AppConfig {
     defaultValue: 'http://10.0.2.2:3000/v1',
   );
 
+  /// The mock/real switch. True (default): auth uses fake data, no server
+  /// needed. Once the real backend is ready:
+  ///
+  ///   flutter run --dart-define=USE_MOCK_API=false
+  static const bool useMockApi = bool.fromEnvironment(
+    'USE_MOCK_API',
+    defaultValue: true,
+  );
+
   static const Duration connectTimeout = Duration(seconds: 10);
   static const Duration receiveTimeout = Duration(seconds: 15);
 }
