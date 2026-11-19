@@ -8,7 +8,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 abstract class TokenStorage {
   Future<String?> readAccessToken();
   Future<String?> readRefreshToken();
-  Future<void> save({required String accessToken, required String refreshToken});
+  Future<void> save({
+    required String accessToken,
+    required String refreshToken,
+  });
 
   /// Called on sign out / expired session ("sign out clears protected state").
   Future<void> clear();
@@ -18,7 +21,7 @@ abstract class TokenStorage {
 /// iOS Keychain). Data survives an app restart, which the spec requires.
 class SecureTokenStorage implements TokenStorage {
   SecureTokenStorage([FlutterSecureStorage? storage])
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage();
 
   final FlutterSecureStorage _storage;
   static const _accessKey = 'access_token';

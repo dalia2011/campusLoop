@@ -45,6 +45,17 @@ class ApiException implements Exception {
   bool get isOffline =>
       type == ApiErrorType.network || type == ApiErrorType.timeout;
 
+  /// Wraps ANY thrown object so screens only ever handle an [ApiException]
+  /// (e.g. a malformed response that fails to parse becomes "unknown").
+  factory ApiException.from(Object error) {
+    if (error is ApiException) return error;
+    if (error is DioException) return ApiException.fromDioException(error);
+    return const ApiException(
+      type: ApiErrorType.unknown,
+      message: 'Something went wrong. Please try again.',
+    );
+  }
+
   /// Turns a low-level Dio failure into an [ApiException].
   factory ApiException.fromDioException(DioException e) {
     // No response at all: the request never reached the server (or timed out).

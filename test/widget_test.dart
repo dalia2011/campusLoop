@@ -23,7 +23,9 @@ void main() {
     expect(find.text('Get started'), findsOneWidget);
   });
 
-  testWidgets('App starts on Home when a session was saved', (tester) async {
+  testWidgets('App starts on the Explore tab when a session was saved', (
+    tester,
+  ) async {
     final storage = MemoryTokenStorage();
     final repo = MockAuthRepository(
       tokenStorage: storage,
@@ -40,6 +42,11 @@ void main() {
         auth: auth,
       ),
     );
+    await tester.pumpAndSettle();
+    expect(find.text('Find your next campus moment.'), findsOneWidget);
+
+    // The Profile tab (still the placeholder) shows who is signed in.
+    await tester.tap(find.text('Profile'));
     await tester.pumpAndSettle();
     expect(find.text('Hi, Sam Lee'), findsOneWidget);
   });

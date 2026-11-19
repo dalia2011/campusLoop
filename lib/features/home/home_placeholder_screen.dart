@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../auth/state/auth_scope.dart';
 
-/// Temporary landing screen after sign in. The team replaces this with the
-/// bottom tabs (Explore, My Events, Alerts, Profile). Keeps a Sign out button
-/// so the auth flow can be tried end to end.
+/// Temporary Profile tab (see MainShell). Replace it with the real profile
+/// screen. Keeps a Sign out button so the auth flow can be tried end to end.
 class HomePlaceholderScreen extends StatelessWidget {
   const HomePlaceholderScreen({super.key});
 
@@ -36,7 +35,7 @@ class HomePlaceholderScreen extends StatelessWidget {
                 style: textTheme.bodyLarge?.copyWith(color: AppColors.muted),
               ),
               const SizedBox(height: AppSpacing.sm),
-              const Text('Explore, My Events, Alerts and Profile go here.'),
+              const Text('The Profile screen goes here.'),
               const Spacer(),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(

@@ -9,6 +9,8 @@ import 'package:campus_loop/features/auth/ui/reset_password_screen.dart';
 import 'package:campus_loop/features/auth/ui/sign_in_screen.dart';
 import 'package:campus_loop/features/auth/ui/validators.dart';
 import 'package:campus_loop/features/auth/ui/welcome_screen.dart';
+import 'package:campus_loop/features/events/data/mock_events_repository.dart';
+import 'package:campus_loop/features/events/state/events_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,10 +21,20 @@ AuthController _controller([MemoryTokenStorage? storage]) => AuthController(
   ),
 );
 
+// Signed in users land on the tab shell, which needs the events repository.
 Widget _wrap(Widget home, AuthController auth) => AuthScope(
   controller: auth,
-  child: MaterialApp(theme: buildAppTheme(), home: home),
+  child: EventsScope(
+    repository: MockEventsRepository(latency: Duration.zero),
+    child: MaterialApp(theme: buildAppTheme(), home: home),
+  ),
 );
+
+/// The Profile tab is where "Hi, name" and Sign out live for now.
+Future<void> _openProfileTab(WidgetTester tester) async {
+  await tester.tap(find.text('Profile'));
+  await tester.pumpAndSettle();
+}
 
 void main() {
   group('AuthValidators', () {
@@ -129,6 +141,7 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Sign in'));
       await tester.pumpAndSettle();
 
+      await _openProfileTab(tester);
       expect(find.text('Hi, Alex Rivera'), findsOneWidget);
 
       await tester.tap(find.text('Sign out'));
@@ -143,7 +156,8 @@ void main() {
         password: MockAuthRepository.demoPassword,
       );
       await tester.pumpWidget(_wrap(const AuthGate(), auth));
-      expect(find.text('Hi, Alex Rivera'), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.text('Find your next campus moment.'), findsOneWidget);
 
       auth.handleSessionExpired();
       await tester.pumpAndSettle();
