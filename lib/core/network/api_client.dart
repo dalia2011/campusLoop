@@ -56,17 +56,20 @@ class ApiClient {
     String path, {
     Map<String, dynamic>? query,
     bool auth = true,
-  }) =>
-      _send<T>('GET', path, query: query, auth: auth);
+  }) => _send<T>('GET', path, query: query, auth: auth);
 
   Future<T> post<T>(
     String path, {
     Object? body,
     String? idempotencyKey,
     bool auth = true,
-  }) =>
-      _send<T>('POST', path,
-          body: body, idempotencyKey: idempotencyKey, auth: auth);
+  }) => _send<T>(
+    'POST',
+    path,
+    body: body,
+    idempotencyKey: idempotencyKey,
+    auth: auth,
+  );
 
   Future<T> put<T>(String path, {Object? body}) =>
       _send<T>('PUT', path, body: body);

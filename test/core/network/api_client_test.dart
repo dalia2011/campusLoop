@@ -29,12 +29,12 @@ class FakeAdapter implements HttpClientAdapter {
 }
 
 ResponseBody jsonReply(int status, Object body) => ResponseBody.fromString(
-      jsonEncode(body),
-      status,
-      headers: {
-        Headers.contentTypeHeader: [Headers.jsonContentType],
-      },
-    );
+  jsonEncode(body),
+  status,
+  headers: {
+    Headers.contentTypeHeader: [Headers.jsonContentType],
+  },
+);
 
 void main() {
   test('adds the bearer token to requests', () async {
@@ -84,13 +84,15 @@ void main() {
   });
 
   test('maps the error envelope to ApiException', () async {
-    final adapter = FakeAdapter((_) => jsonReply(409, {
-          'error': {
-            'code': 'EVENT_FULL',
-            'message': 'That spot was just taken.',
-            'requestId': 'req_1',
-          },
-        }));
+    final adapter = FakeAdapter(
+      (_) => jsonReply(409, {
+        'error': {
+          'code': 'EVENT_FULL',
+          'message': 'That spot was just taken.',
+          'requestId': 'req_1',
+        },
+      }),
+    );
     final client = ApiClient(
       tokenStorage: MemoryTokenStorage(),
       baseUrl: 'http://test/v1',
@@ -99,10 +101,12 @@ void main() {
 
     await expectLater(
       client.post<Map<String, dynamic>>('/events/evt_1/registrations'),
-      throwsA(isA<ApiException>()
-          .having((e) => e.type, 'type', ApiErrorType.conflict)
-          .having((e) => e.code, 'code', 'EVENT_FULL')
-          .having((e) => e.requestId, 'requestId', 'req_1')),
+      throwsA(
+        isA<ApiException>()
+            .having((e) => e.type, 'type', ApiErrorType.conflict)
+            .having((e) => e.code, 'code', 'EVENT_FULL')
+            .having((e) => e.requestId, 'requestId', 'req_1'),
+      ),
     );
   });
 
@@ -137,9 +141,11 @@ void main() {
     final storage = MemoryTokenStorage();
     await storage.save(accessToken: 'OLD', refreshToken: 'R1');
     var expired = false;
-    final adapter = FakeAdapter((_) => jsonReply(401, {
-          'error': {'code': 'UNAUTHENTICATED', 'message': 'Expired'},
-        }));
+    final adapter = FakeAdapter(
+      (_) => jsonReply(401, {
+        'error': {'code': 'UNAUTHENTICATED', 'message': 'Expired'},
+      }),
+    );
     final client = ApiClient(
       tokenStorage: storage,
       baseUrl: 'http://test/v1',
@@ -149,8 +155,13 @@ void main() {
 
     await expectLater(
       client.get<Map<String, dynamic>>('/me/events'),
-      throwsA(isA<ApiException>()
-          .having((e) => e.type, 'type', ApiErrorType.unauthorized)),
+      throwsA(
+        isA<ApiException>().having(
+          (e) => e.type,
+          'type',
+          ApiErrorType.unauthorized,
+        ),
+      ),
     );
     expect(expired, true);
     expect(await storage.readAccessToken(), isNull);

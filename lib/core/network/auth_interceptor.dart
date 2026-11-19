@@ -58,15 +58,16 @@ class AuthInterceptor extends QueuedInterceptor {
     final request = err.requestOptions;
     final isUnauthorized = err.response?.statusCode == 401;
     final canRetry =
-        request.extra[skipAuthKey] != true && request.extra[_retriedKey] != true;
+        request.extra[skipAuthKey] != true &&
+        request.extra[_retriedKey] != true;
 
     if (!isUnauthorized || !canRetry) {
       return handler.next(err);
     }
 
     // Which token did the failed request carry?
-    final sentToken =
-        (request.headers['Authorization'] as String?)?.replaceFirst('Bearer ', '');
+    final sentToken = (request.headers['Authorization'] as String?)
+        ?.replaceFirst('Bearer ', '');
     final currentToken = await tokenStorage.readAccessToken();
 
     // If another queued request already refreshed the tokens while we were

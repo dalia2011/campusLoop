@@ -45,6 +45,24 @@ ThemeData buildAppTheme() {
       bodyColor: AppColors.ink,
       displayColor: AppColors.ink,
     ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
+      foregroundColor: AppColors.ink,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+    ),
+    navigationBarTheme: const NavigationBarThemeData(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      indicatorColor: AppColors.tint,
+    ),
+    tabBarTheme: const TabBarThemeData(
+      labelColor: AppColors.primary,
+      unselectedLabelColor: AppColors.muted,
+      indicatorColor: AppColors.primary,
+      labelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.background,

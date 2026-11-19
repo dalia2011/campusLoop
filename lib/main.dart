@@ -10,6 +10,10 @@ import 'features/auth/data/mock_auth_repository.dart';
 import 'features/auth/state/auth_controller.dart';
 import 'features/auth/state/auth_scope.dart';
 import 'features/auth/ui/auth_gate.dart';
+import 'features/events/data/api_events_repository.dart';
+import 'features/events/data/events_repository.dart';
+import 'features/events/data/mock_events_repository.dart';
+import 'features/events/state/events_scope.dart';
 
 /// App entry point. Flutter starts running here.
 ///
@@ -33,11 +37,21 @@ void main() {
       : ApiAuthRepository(apiClient: apiClient, tokenStorage: tokenStorage);
   auth = AuthController(repository)..restore();
 
-  runApp(CampusLoopApp(apiClient: apiClient, auth: auth));
+  // Events use the same mock/real switch as auth.
+  final EventsRepository events = AppConfig.useMockApi
+      ? MockEventsRepository()
+      : ApiEventsRepository(apiClient: apiClient);
+
+  runApp(CampusLoopApp(apiClient: apiClient, auth: auth, events: events));
 }
 
 class CampusLoopApp extends StatelessWidget {
-  const CampusLoopApp({super.key, required this.apiClient, required this.auth});
+  CampusLoopApp({
+    super.key,
+    required this.apiClient,
+    required this.auth,
+    EventsRepository? events,
+  }) : events = events ?? MockEventsRepository(latency: Duration.zero);
 
   /// Created once in main() and handed down to whatever needs the backend.
   final ApiClient apiClient;
@@ -45,14 +59,21 @@ class CampusLoopApp extends StatelessWidget {
   /// Who is signed in. Available to all screens through [AuthScope].
   final AuthController auth;
 
+  /// Events, registrations and tickets. Available through [EventsScope].
+  /// Defaults to instant mock data so widget tests need no setup.
+  final EventsRepository events;
+
   @override
   Widget build(BuildContext context) {
     return AuthScope(
       controller: auth,
-      child: MaterialApp(
-        title: 'CampusLoop',
-        theme: buildAppTheme(),
-        home: const AuthGate(),
+      child: EventsScope(
+        repository: events,
+        child: MaterialApp(
+          title: 'CampusLoop',
+          theme: buildAppTheme(),
+          home: const AuthGate(),
+        ),
       ),
     );
   }
